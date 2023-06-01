@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "myapp"
+version = "0.1.0"
+description = "Sample python for Tensorflow on MacOS"
+authors = ["phdcybersec <82591009+phdcybersec@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.24.3"
+pandas = "^2.0.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+black = "^23.3.0"
+isort = "^5.12.0"
+autoflake = "^2.1.1"
+
+[tool.poetry.scripts]
+myapp = "myapp:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
