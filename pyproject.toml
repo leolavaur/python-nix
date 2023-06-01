@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "myapp"
 version = "0.1.0"
-description = "Sample python for Tensorflow on MacOS"
+description = "Sample Python project with Nix"
 authors = ["phdcybersec <82591009+phdcybersec@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
