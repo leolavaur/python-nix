@@ -1,7 +1,7 @@
-import time
+import tensorflow as tf
 
 
-def do_something():
-    print("Doing something from module.py")
-    time.sleep(1)
-    print("Done!")
+def list_gpus():
+    gpus = tf.config.list_physical_devices("GPU")
+    for gpu in gpus:
+        print("Name:", gpu.name, "Type:", gpu.device_type)

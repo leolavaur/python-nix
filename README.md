@@ -9,6 +9,7 @@ Namely, it provides:
 4. Automatic Python intepreter selection for execution and debugging in [VSCode](https://code.visualstudio.com/) with using direnv's VSCode extension [direnv-vscode](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv).
 5. Sane defaults in terms of Python tooling that can easily be modified (`black`, `isort`, `autoflake`, and `pytest`).
 6. A standard project layout as per Kenneth Reitz's [recommendations](https://kennethreitz.org/essays/2013/01/27/repository-structure-and-python).
+7. A fully reproducible environment for [TensorFlow](https://www.tensorflow.org/) on Apple Silicon.
 
 
 ## Prerequisites
@@ -49,3 +50,36 @@ At that point, the Nix environment will not be loaded, and even poetry won't be 
 To fix the issue, the flake provides a poetry distribution that is pinned to the same version as the one used in the environment.
 You can use it to regenerate the lockfile or interact with poetry in general, via `nix run .#poetry <args_or_subcommands>`.
 For example, to regenerate the lockfile, run `nix run .#poetry lock`.
+
+### How do I update TensorFlow?
+
+TensorFlow is a special case, as it is not directly available on Apple Silicon, especially with GPU support.
+Apple provides [installation instructions](https://developer.apple.com/metal/tensorflow-plugin/) for the Metal plugin, but they are not compatible with Nix.
+Therefore, updating TensorFlow requires a bit of manual work.
+
+1. Identify the Python version compatible with the TensorFlow version you want to install.
+   > For example, TensorFlow 2.10 is incompatible with Python 3.11.
+2. Update the `pythonVer` attribute in `flake.nix` to point to the correct version.
+3. Identify the `tensorflow-metal` plugin version compatible with the TensorFlow version you want to install.
+   > For example, TensorFlow 2.10 is compatible with the Metal plugin 0.6. See the compatibility table [below](#annex-a-tensorflow-compatibility-table).
+4. Extract the other dependency requirements for the version that you want to use, from the metadata of Apple's `tensorflow-deps` [Conda metapackage](https://anaconda.org/apple/tensorflow-deps/files). Download the archive corresponding to your TensorFlow version, and extract the `info/recipe/meta.yaml` file.
+   > For example, TensorFlow 2.10 requires `grpcio >=1.37.0,<2.0`, `h5py >=3.6.0,<3.7`, `numpy >=1.23.2,<1.23.3`, and `protobuf >=3.19.1,<3.20`.
+5. Update `pyproject.toml` with the new dependencies.
+6. Generate the lockfile with `nix run .#poetry lock`, and let direnv reload the environment.
+
+## Annex A: TensorFlow compatibility table
+
+Note that Apple's documented [releases](https://developer.apple.com/metal/tensorflow-plugin/) are not always up-to-date.
+I found more tested association on Apple's [community forum](https://developer.apple.com/forums/thread/689300?answerId=751771022#751771022). 
+
+| TensorFlow version | Metal plugin version |
+|--------------------|----------------------|
+| 2.5                | 0.1.2                |
+| 2.6                | 0.2                  |
+| 2.7                | 0.3                  |
+| 2.8                | 0.4                  |
+| 2.9                | 0.5                  |
+| 2.10               | 0.6                  |
+
+While `tensorflow-metal` has versions up to 0.8, I have not yet managed to make them work with the latest TensorFlow versions.
+

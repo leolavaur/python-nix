@@ -1,7 +1,7 @@
-from myapp.module import do_something
+from myapp.module import list_gpus
 
 
-def test_do_something(capfd):
-    do_something()
+def test_list_gpus(capfd):
+    list_gpus()
     out, err = capfd.readouterr()
-    assert "Done!" in out
+    assert "/physical_device:GPU:0" in out
