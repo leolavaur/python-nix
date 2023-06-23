@@ -11,23 +11,24 @@
   };
 
   outputs = { self, nixpkgs, poetry2nix, ... }:
+    let pythonVer = "python310"; in
     {
       overlay = final: prev: {
     
         myapp = final.poetry2nix.mkPoetryApplication {
           projectDir = self;
           preferWheels = true;
-          python = final.python311;
+          python = final.${pythonVer};
         };
 
         myappEnv = final.poetry2nix.mkPoetryEnv {
           projectDir = self;
           preferWheels = true;
-          python = final.python311;
+          python = final.${pythonVer};
           editablePackageSources = { myapp = self; };
         };
 
-        poetry = (prev.poetry.override { python = prev.python311; });
+        poetry = (prev.poetry.override { python = prev.${pythonVer}; });
       };
     } // (let
 
@@ -47,17 +48,18 @@
     in {
       devShells = forAllSystems (pkgs: with pkgs; {
         default = mkShellNoCC {
-          packages = [            
-            myapp
+          packages = [
+            # this package            
             myappEnv
+
+            # development dependencies
             poetry
           ];
 
           shellHook = ''
-            export PYTHONPATH=${python311}
+            export PYTHONPATH=${pkgs.${pythonVer}}
           '';
         };
-
       });
 
       packages = forAllSystems (pkgs: {
