@@ -11,7 +11,7 @@
   };
 
   outputs = { self, nixpkgs, poetry2nix, ... }:
-    let pythonVer = "python310"; in
+    let pythonVer = "python311"; in
     {
       overlay = final: prev: {
     
