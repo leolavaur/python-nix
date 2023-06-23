@@ -30,6 +30,7 @@
           projectDir = self;
           preferWheels = true;
           python = final.${pythonVer};
+          groups = if final.stdenv.isDarwin then [ "macos" ] else [ "linux" ];
         };
 
         myappEnv = final.poetry2nix.mkPoetryEnv {
@@ -37,6 +38,7 @@
           preferWheels = true;
           python = final.${pythonVer};
           editablePackageSources = { myapp = ./.; };
+          groups = [ "dev" ] ++ (if final.stdenv.isDarwin then [ "macos" ] else [ "linux" ]);
         };
 
         poetry = (prev.poetry.override { python = final.${pythonVer}; });
